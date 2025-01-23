@@ -77,8 +77,13 @@ func (a *ServerChi) Run() (err error) {
 		rt.Get("/brand/{brand}/between/{start_year}/{end_year}", hd.GetByBranForRange())
 		rt.Get("/average_speed/brand/{brand}", hd.GetAverageSpped())
 		rt.Post("/batch", hd.CreateBatch())
+		rt.Get("/fuel_type/{type}", hd.GetByFuelType())
 		rt.Post("/", hd.Create())
 		rt.Put("/{id}/update_speed", hd.UpdateSpeed())
+		rt.Get("/transmission/{type}", hd.GetByTransmission())
+		rt.Put("/{id}/update_fuel", hd.UpdateFuel())
+		rt.Get("/average_capacity/brand/{brand}", hd.GetAverageCapacity())
+		rt.Delete("/{id}", hd.Delete())
 	})
 
 	// run server

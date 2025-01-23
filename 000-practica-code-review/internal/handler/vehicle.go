@@ -4,6 +4,7 @@ import (
 	"app/internal/service"
 	"app/pkg/models"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -69,7 +70,9 @@ func (h *VehicleDefault) GetAll() http.HandlerFunc {
 		// - get all vehicles
 		v, err := h.sv.FindAll()
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": "No se encontró el vehículo.",
+			})
 			return
 		}
 
@@ -97,6 +100,110 @@ func (h *VehicleDefault) GetAll() http.HandlerFunc {
 			"message": "success",
 			"data":    data,
 		})
+	}
+}
+
+func (h *VehicleDefault) GetAverageCapacity() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		brand := chi.URLParam(r, "brand")
+
+		average, err := h.sv.GetAverageCapacity(brand)
+		if err != nil {
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": fmt.Sprintf("La capacidad promedio es %.2f", average),
+		})
+	}
+}
+
+func (h *VehicleDefault) UpdateFuel() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+
+		var v models.Vehicle
+		err = json.NewDecoder(r.Body).Decode(&v)
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Tipo de combustible mal formado o no admitido.",
+			})
+			return
+		}
+
+		err = h.sv.UpdateFuel(id, v.FuelType)
+
+		if err != nil {
+			if err.Error() == "No se encontró el vehículo." {
+				response.JSON(w, http.StatusNotFound, map[string]any{
+					"message": err.Error(),
+				})
+			} else {
+				response.JSON(w, http.StatusBadRequest, map[string]any{
+					"message": "Tipo de combustible mal formado o no admitido.",
+				})
+			}
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "Tipo de combustible del vehículo actualizado exitosamente.",
+		})
+
+	}
+}
+
+func (h *VehicleDefault) GetByTransmission() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		type_t := chi.URLParam(r, "type")
+
+		v, err := h.sv.GetByTransmission(type_t)
+		if err != nil {
+			response.JSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+
+		// response
+		data := make(map[int]models.VehicleDoc)
+		for key, value := range v {
+			data[key] = models.VehicleDoc{
+				ID:              value.Id,
+				Brand:           value.Brand,
+				Model:           value.Model,
+				Registration:    value.Registration,
+				Color:           value.Color,
+				FabricationYear: value.FabricationYear,
+				Capacity:        value.Capacity,
+				MaxSpeed:        value.MaxSpeed,
+				FuelType:        value.FuelType,
+				Transmission:    value.Transmission,
+				Weight:          value.Weight,
+				Height:          value.Height,
+				Length:          value.Length,
+				Width:           value.Width,
+			}
+		}
+
+		if len(data) < 1 {
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": "No se encontraron vehículos con ese tipo de transmisión.",
+			})
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "success",
+			"data":    data,
+		})
+
 	}
 }
 
@@ -310,5 +417,85 @@ func (h *VehicleDefault) UpdateSpeed() http.HandlerFunc {
 			"message": "Velocidad del vehículo actualizada exitosamente.",
 		})
 
+	}
+
+}
+func (h *VehicleDefault) GetByFuelType() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fuel_type := chi.URLParam(r, "type")
+
+		v, err := h.sv.GetByFuelType(fuel_type)
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Bad request",
+			})
+		}
+
+		// response
+		data := make(map[int]models.VehicleDoc)
+		for key, value := range v {
+			data[key] = models.VehicleDoc{
+				ID:              value.Id,
+				Brand:           value.Brand,
+				Model:           value.Model,
+				Registration:    value.Registration,
+				Color:           value.Color,
+				FabricationYear: value.FabricationYear,
+				Capacity:        value.Capacity,
+				MaxSpeed:        value.MaxSpeed,
+				FuelType:        value.FuelType,
+				Transmission:    value.Transmission,
+				Weight:          value.Weight,
+				Height:          value.Height,
+				Length:          value.Length,
+				Width:           value.Width,
+			}
+		}
+
+		if len(data) < 1 {
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": " No se encontraron vehículos con ese tipo de combustible.",
+			})
+		} else {
+
+			response.JSON(w, http.StatusOK, map[string]any{
+				"message": "success",
+				"data":    data,
+			})
+		}
+
+	}
+}
+
+func (h *VehicleDefault) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Bad request",
+			})
+		}
+
+		err = h.sv.Delete(id)
+
+		if err != nil {
+			if err.Error() == "No se encontró el vehículo" {
+				response.JSON(w, http.StatusNotFound, map[string]any{
+					"message": err.Error(),
+				})
+			} else {
+
+				response.JSON(w, http.StatusBadRequest, map[string]any{
+					"message": "Bad request",
+				})
+			}
+			return
+		}
+
+		response.JSON(w, http.StatusNoContent, map[string]any{
+			"message": "Vehículo eliminado exitosamente",
+		})
 	}
 }

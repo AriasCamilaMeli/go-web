@@ -22,6 +22,22 @@ func (s *VehicleDefault) FindAll() (v map[int]models.Vehicle, err error) {
 	v, err = s.rp.FindAll()
 	return
 }
+
+func (s *VehicleDefault) GetAverageCapacity(brand string) (average float64, err error) {
+	average, err = s.rp.GetAverageCapacity(brand)
+
+	return
+}
+
+func (s *VehicleDefault) UpdateFuel(id int, update_fuel string) (err error) {
+	err = s.rp.UpdateFuel(id, update_fuel)
+	return
+}
+
+func (s *VehicleDefault) GetByTransmission(type_t string) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetByTransmission(type_t)
+	return
+}
 func (s *VehicleDefault) GetAverageSpped(brand string) (average_speed float64, err error) {
 	average_speed, err = s.rp.GetAverageSpped(brand)
 	return
@@ -55,6 +71,16 @@ func (s *VehicleDefault) Create(v models.Vehicle) (err error) {
 	}
 
 	err = s.rp.Create(v)
+	return
+}
+
+func (s *VehicleDefault) GetByFuelType(fuel_type string) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetByFuelType(fuel_type)
+	return
+}
+
+func (s *VehicleDefault) Delete(id int) (err error) {
+	err = s.rp.Delete(id)
 	return
 }
 
