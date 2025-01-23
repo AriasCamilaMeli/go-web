@@ -22,6 +22,20 @@ func (s *VehicleDefault) FindAll() (v map[int]models.Vehicle, err error) {
 	v, err = s.rp.FindAll()
 	return
 }
+func (s *VehicleDefault) GetAverageSpped(brand string) (average_speed float64, err error) {
+	average_speed, err = s.rp.GetAverageSpped(brand)
+	return
+}
+
+// FindAll is a method that returns a map of all vehicles
+func (s *VehicleDefault) GetByColorAndYear(color string, year int) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetByColorAndYear(color, year)
+	return
+}
+func (s *VehicleDefault) GetByBranForRange(brand string, start_year int, end_year int) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetByBranForRange(brand, start_year, end_year)
+	return
+}
 
 // Create
 func (s *VehicleDefault) Create(v models.Vehicle) (err error) {
@@ -78,4 +92,41 @@ func validateVehicle(v models.Vehicle) error {
 	}
 
 	return nil
+}
+
+// CreateBatch is a method that creates multiple vehicles at once
+func (s *VehicleDefault) CreateBatch(vehicles []models.Vehicle) (err error) {
+	vAll, err := s.rp.FindAll()
+	if err != nil {
+		return err
+	}
+
+	for _, v := range vehicles {
+		if _, exists := vAll[v.Id]; exists {
+			return errors.New("Algún vehículo tiene un identificador ya existente.")
+		}
+	}
+
+	for _, v := range vehicles {
+		if err := validateVehicle(v); err != nil {
+			return err
+		}
+	}
+
+	err = s.rp.CreateBatch(vehicles)
+	return
+}
+
+func (s *VehicleDefault) UpdateSpeed(id int, speed float64) (err error) {
+
+	if speed < 0 {
+		return errors.New("Velocidad mal formada o fuera de rango.")
+	}
+
+	err = s.rp.UpdateSpeed(id, speed)
+	if err != nil {
+		return err
+	}
+
+	return
 }
