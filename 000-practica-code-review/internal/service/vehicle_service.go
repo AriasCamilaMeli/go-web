@@ -17,4 +17,6 @@ type VehicleService interface {
 	GetByTransmission(type_t string) (v map[int]models.Vehicle, err error)
 	UpdateFuel(id int, update_fuel string) (err error)
 	GetAverageCapacity(brand string) (average float64, err error)
+	GetDimensions(min_lenght, max_lenght, min_width, max_width float64) (v map[int]models.Vehicle, err error)
+	GetByWeight(min, max float64) (v map[int]models.Vehicle, err error)
 }

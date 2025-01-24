@@ -33,6 +33,31 @@ func (r *VehicleMap) FindAll() (v map[int]models.Vehicle, err error) {
 	return
 }
 
+func (r *VehicleMap) GetByWeight(min, max float64) (v map[int]models.Vehicle, err error) {
+	v = make(map[int]models.Vehicle)
+
+	for key, value := range r.db {
+		if value.Width <= max && value.Width >= min {
+			v[key] = value
+		}
+	}
+
+	return
+
+}
+
+func (r *VehicleMap) GetDimensions(min_lenght, max_lenght, min_width, max_width float64) (v map[int]models.Vehicle, err error) {
+	v = make(map[int]models.Vehicle)
+
+	for key, value := range r.db {
+		if value.Length <= max_lenght && value.Length >= min_lenght && value.Width <= max_width && value.Width >= min_width {
+			v[key] = value
+		}
+	}
+
+	return
+}
+
 func (r *VehicleMap) GetAverageCapacity(brand string) (average float64, err error) {
 	sum := 0
 	len := 0

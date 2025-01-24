@@ -23,6 +23,18 @@ func (s *VehicleDefault) FindAll() (v map[int]models.Vehicle, err error) {
 	return
 }
 
+func (s *VehicleDefault) GetByWeight(min, max float64) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetByWeight(min, max)
+
+	return
+}
+
+func (s *VehicleDefault) GetDimensions(min_lenght, max_lenght, min_width, max_width float64) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetDimensions(min_lenght, max_lenght, min_width, max_width)
+
+	return
+}
+
 func (s *VehicleDefault) GetAverageCapacity(brand string) (average float64, err error) {
 	average, err = s.rp.GetAverageCapacity(brand)
 

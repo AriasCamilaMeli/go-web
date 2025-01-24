@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/bootcamp-go/web/response"
 	"github.com/go-chi/chi/v5"
@@ -100,6 +101,159 @@ func (h *VehicleDefault) GetAll() http.HandlerFunc {
 			"message": "success",
 			"data":    data,
 		})
+	}
+}
+
+func (h *VehicleDefault) GetByWeight() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		min, err := strconv.ParseFloat(r.URL.Query().Get("min"), 64)
+		if err != nil {
+			response.JSON(w, http.StatusInternalServerError, map[string]any{
+				"message": "Hubo en error en los parametros de entrada.",
+			})
+			return
+		}
+		max, err := strconv.ParseFloat(r.URL.Query().Get("max"), 64)
+		if err != nil {
+			response.JSON(w, http.StatusInternalServerError, map[string]any{
+				"message": "Hubo en error en los parametros de entrada.",
+			})
+			return
+		}
+
+		v, err := h.sv.GetByWeight(min, max)
+		// response
+		data := make(map[int]models.VehicleDoc)
+		for key, value := range v {
+			data[key] = models.VehicleDoc{
+				ID:              value.Id,
+				Brand:           value.Brand,
+				Model:           value.Model,
+				Registration:    value.Registration,
+				Color:           value.Color,
+				FabricationYear: value.FabricationYear,
+				Capacity:        value.Capacity,
+				MaxSpeed:        value.MaxSpeed,
+				FuelType:        value.FuelType,
+				Transmission:    value.Transmission,
+				Weight:          value.Weight,
+				Height:          value.Height,
+				Length:          value.Length,
+				Width:           value.Width,
+			}
+		}
+
+		if len(data) < 1 {
+
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": "No se encontraron vehículos en ese rango de peso.",
+			})
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "success",
+			"data":    data,
+		})
+
+	}
+}
+
+func (h *VehicleDefault) GetDimensions() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		lengthRange := r.URL.Query().Get("length")
+
+		lengths := strings.Split(lengthRange, "-")
+		if len(lengths) != 2 {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Formato de longitud inválido.",
+			})
+			return
+		}
+
+		min_length, err := strconv.ParseFloat(lengths[0], 64)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Valor mínimo de longitud inválido.",
+			})
+			return
+		}
+
+		max_length, err := strconv.ParseFloat(lengths[1], 64)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Valor máximo de longitud inválido.",
+			})
+			return
+		}
+
+		widthRange := r.URL.Query().Get("width")
+
+		widths := strings.Split(widthRange, "-")
+		if len(widths) != 2 {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Formato de hancho inválido.",
+			})
+			return
+		}
+
+		min_width, err := strconv.ParseFloat(widths[0], 64)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Valor mínimo de hancho inválido.",
+			})
+			return
+		}
+
+		max_width, err := strconv.ParseFloat(widths[1], 64)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": "Valor máximo de hancho inválido.",
+			})
+			return
+		}
+
+		v, err := h.sv.GetDimensions(min_length, max_length, min_width, max_width)
+		if err != nil {
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": "No se encontró el vehículo.",
+			})
+			return
+		}
+
+		// response
+		data := make(map[int]models.VehicleDoc)
+		for key, value := range v {
+			data[key] = models.VehicleDoc{
+				ID:              value.Id,
+				Brand:           value.Brand,
+				Model:           value.Model,
+				Registration:    value.Registration,
+				Color:           value.Color,
+				FabricationYear: value.FabricationYear,
+				Capacity:        value.Capacity,
+				MaxSpeed:        value.MaxSpeed,
+				FuelType:        value.FuelType,
+				Transmission:    value.Transmission,
+				Weight:          value.Weight,
+				Height:          value.Height,
+				Length:          value.Length,
+				Width:           value.Width,
+			}
+		}
+
+		if len(data) < 1 {
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": "No se encontraron vehículos con esas dimensiones.",
+			})
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "success",
+			"data":    data,
+		})
+
 	}
 }
 

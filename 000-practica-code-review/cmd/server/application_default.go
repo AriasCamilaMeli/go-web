@@ -73,6 +73,7 @@ func (a *ServerChi) Run() (err error) {
 	rt.Route("/vehicles", func(rt chi.Router) {
 		// - GET /vehicles
 		rt.Get("/", hd.GetAll())
+		rt.Get("/dimensions", hd.GetDimensions())
 		rt.Get("/color/{color}/year/{year}", hd.GetByColorAndYear())
 		rt.Get("/brand/{brand}/between/{start_year}/{end_year}", hd.GetByBranForRange())
 		rt.Get("/average_speed/brand/{brand}", hd.GetAverageSpped())
@@ -83,6 +84,7 @@ func (a *ServerChi) Run() (err error) {
 		rt.Get("/transmission/{type}", hd.GetByTransmission())
 		rt.Put("/{id}/update_fuel", hd.UpdateFuel())
 		rt.Get("/average_capacity/brand/{brand}", hd.GetAverageCapacity())
+		rt.Get("/weight", hd.GetByWeight())
 		rt.Delete("/{id}", hd.Delete())
 	})
 
