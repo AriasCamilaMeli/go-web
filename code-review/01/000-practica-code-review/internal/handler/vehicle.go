@@ -122,6 +122,12 @@ func (h *VehicleDefault) GetByWeight() http.HandlerFunc {
 		}
 
 		v, err := h.sv.GetByWeight(min, max)
+		if err != nil {
+			response.JSON(w, http.StatusNotFound, map[string]any{
+				"message": "No se encontró el vehículo.",
+			})
+			return
+		}
 		// response
 		data := make(map[int]models.VehicleDoc)
 		for key, value := range v {
