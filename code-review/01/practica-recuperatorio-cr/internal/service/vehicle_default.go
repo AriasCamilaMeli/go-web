@@ -33,6 +33,20 @@ func (s *VehicleDefault) Save(v models.Vehicle) (newV models.Vehicle, err error)
 	return
 }
 
+// GetByColorAndYear metodo para obtener vehicolos por color y año dado
+func (s *VehicleDefault) GetByColorAndYear(color string, year int) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetByColorAndYear(color, year)
+	if err != nil {
+		err = models.InternalErr
+	}
+
+	if len(v) < 1 {
+		err = models.NotFoundErr
+	}
+
+	return
+}
+
 // Función que valida los campos del vehículo
 func validateVehicle(v models.Vehicle) error {
 	// Verificar si los campos obligatorios no están vacíos

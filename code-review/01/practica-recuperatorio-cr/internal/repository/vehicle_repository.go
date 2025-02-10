@@ -8,4 +8,6 @@ type VehicleRepository interface {
 	FindAll() (v map[int]models.Vehicle, err error)
 	// Store is a method that stores a vehicle
 	Store(v models.Vehicle) (newV models.Vehicle, err error)
+	// GetByColorAndYear metodo para obtener vehicolos por color y año dado
+	GetByColorAndYear(color string, year int) (v map[int]models.Vehicle, err error)
 }

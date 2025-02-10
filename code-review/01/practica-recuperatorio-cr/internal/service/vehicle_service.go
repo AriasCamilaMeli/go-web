@@ -8,4 +8,6 @@ type VehicleService interface {
 	FindAll() (v map[int]models.Vehicle, err error)
 	// Save is a method that stores a vehicle
 	Save(v models.Vehicle) (newV models.Vehicle, err error)
+	// GetByColorAndYear metodo para obtener vehicolos por color y año dado
+	GetByColorAndYear(color string, year int) (v map[int]models.Vehicle, err error)
 }

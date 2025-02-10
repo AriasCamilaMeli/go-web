@@ -42,3 +42,17 @@ func (r *VehicleMap) Store(v models.Vehicle) (newV models.Vehicle, err error) {
 	newV = r.db[v.Id]
 	return
 }
+
+// GetByColorAndYear metodo para obtener vehicolos por color y año dado
+func (r *VehicleMap) GetByColorAndYear(color string, year int) (v map[int]models.Vehicle, err error) {
+	v = make(map[int]models.Vehicle)
+
+	// copy db
+	for key, value := range r.db {
+		if value.Color == color && value.FabricationYear == year {
+			v[key] = value
+		}
+	}
+
+	return
+}

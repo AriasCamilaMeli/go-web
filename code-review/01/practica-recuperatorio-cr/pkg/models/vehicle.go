@@ -69,4 +69,5 @@ var (
 	AlreadyExistErr = errors.New("Identificador del vehículo ya existente")
 	BadRequestErr   = errors.New("Datos del vehículo mal formados o incompletos")
 	InternalErr     = errors.New("Error del servidor")
+	NotFoundErr     = errors.New("No se encontraron vehículos con esos criterios.")
 )
