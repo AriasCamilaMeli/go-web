@@ -5,6 +5,7 @@ import (
 	"app/internal/loader"
 	"app/internal/repository"
 	"app/internal/service"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -72,9 +73,12 @@ func (a *ServerChi) Run() (err error) {
 	rt.Route("/vehicles", func(rt chi.Router) {
 		// - GET /vehicles
 		rt.Get("/", hd.GetAll())
+		rt.Post("/", hd.Create())
 	})
 
 	// run server
+	// run server
+	fmt.Println("Server: http://localhost:8080")
 	err = http.ListenAndServe(a.serverAddress, rt)
 	return
 }

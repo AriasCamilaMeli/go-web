@@ -3,6 +3,8 @@ package handler
 import (
 	"app/internal/service"
 	"app/pkg/models"
+	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/bootcamp-go/web/response"
@@ -58,4 +60,46 @@ func (h *VehicleDefault) GetAll() http.HandlerFunc {
 			"data":    data,
 		})
 	}
+}
+
+// Create is a method that returns a handler for the route POST /vehicles
+func (h *VehicleDefault) Create() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		var v models.Vehicle
+		err := json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message":     "Error",
+				"description": models.BadRequestErr.Error(),
+			})
+		}
+		// process
+		newV, err := h.sv.Save(v)
+		if err != nil {
+			if errors.Is(err, models.BadRequestErr) {
+				response.JSON(w, http.StatusBadRequest, map[string]any{
+					"Error description": err.Error(),
+				})
+			} else if errors.Is(err, models.AlreadyExistErr) {
+				response.JSON(w, http.StatusConflict, map[string]any{
+					"Error description": err.Error(),
+				})
+			} else {
+				response.JSON(w, http.StatusInternalServerError, map[string]any{
+					"Error description": err.Error(),
+				})
+			}
+			return
+
+		}
+
+		// response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "success",
+			"data":    newV,
+		})
+
+	}
+
 }

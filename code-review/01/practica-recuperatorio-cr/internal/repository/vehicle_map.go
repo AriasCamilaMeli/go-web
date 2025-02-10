@@ -31,3 +31,18 @@ func (r *VehicleMap) FindAll() (v map[int]models.Vehicle, err error) {
 
 	return
 }
+
+// Store is a method that stores a vehicle
+func (r *VehicleMap) Store(v models.Vehicle) (newV models.Vehicle, err error) {
+	_, exists := r.db[v.Id]
+
+	if exists {
+		return newV, models.AlreadyExistErr
+	}
+
+	r.db[v.Id] = v
+
+	newV = r.db[v.Id]
+
+	return
+}
