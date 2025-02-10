@@ -80,6 +80,16 @@ func (s *VehicleDefault) CreateInBatch(v []models.Vehicle) (err error) {
 	return
 }
 
+// UpdateSpeed()
+func (s *VehicleDefault) UpdateSpeed(id int, speed float64) (err error) {
+	if speed < 1 {
+		err = models.BadRequestErr
+		return
+	}
+	err = s.rp.UpdateSpeed(id, speed)
+	return
+}
+
 // Función que valida los campos del vehículo
 func validateVehicle(v models.Vehicle) error {
 	// Verificar si los campos obligatorios no están vacíos

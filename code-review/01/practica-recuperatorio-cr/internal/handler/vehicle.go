@@ -307,3 +307,42 @@ func (h *VehicleDefault) CreateInBatch() http.HandlerFunc {
 
 	}
 }
+
+func (h *VehicleDefault) UpdateSpeed() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": models.BadRequestErr.Error(),
+			})
+			return
+		}
+		var v models.Vehicle
+		err = json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"message": models.BadRequestErr.Error(),
+			})
+			return
+		}
+
+		err = h.sv.UpdateSpeed(id, v.MaxSpeed)
+
+		if err != nil {
+			var statusCode int
+			switch {
+			case errors.Is(err, models.BadRequestErr):
+				statusCode = http.StatusBadRequest
+			default:
+				statusCode = http.StatusInternalServerError
+			}
+			response.JSON(w, statusCode, map[string]any{
+				"message": err.Error(),
+			})
+			return
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "Velocidad del vehículo actualizada exitosamente",
+		})
+	}
+}

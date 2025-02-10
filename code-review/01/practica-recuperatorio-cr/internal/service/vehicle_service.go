@@ -16,4 +16,6 @@ type VehicleService interface {
 	GetVelocityAVGByBrand(brand string) (avg float32, err error)
 	//CreateInBatch()
 	CreateInBatch(v []models.Vehicle) (err error)
+	//UpdateSpeed()
+	UpdateSpeed(id int, speed float64) (err error)
 }

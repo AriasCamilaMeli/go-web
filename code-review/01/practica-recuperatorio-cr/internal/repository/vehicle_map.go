@@ -109,3 +109,19 @@ func (r *VehicleMap) CreateInBatch(v []models.Vehicle) (err error) {
 	return
 
 }
+
+// UpdateSpeed()
+func (r *VehicleMap) UpdateSpeed(id int, speed float64) (err error) {
+	v, exists := r.db[id]
+
+	if !exists {
+		err = models.NotFoundErr
+		return
+	}
+
+	v.MaxSpeed = speed
+
+	r.db[id] = v
+
+	return nil
+}
