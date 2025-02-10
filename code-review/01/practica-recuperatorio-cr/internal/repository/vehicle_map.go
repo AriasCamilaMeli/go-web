@@ -70,3 +70,26 @@ func (r *VehicleMap) GetByBrandAndYears(brand string, startYear, endYear int) (v
 
 	return
 }
+
+// GetVelocityAVGByBrand()
+func (r *VehicleMap) GetVelocityAVGByBrand(brand string) (avg float32, err error) {
+
+	var (
+		contador = 0
+		suma     = 0
+	)
+	// copy db
+	for _, value := range r.db {
+		if value.Brand == brand {
+			contador += 1
+			suma += value.Capacity
+		}
+	}
+
+	if contador == 0 {
+		return 0, models.NotFoundErr
+	}
+
+	return (float32(suma) / float32(contador)), nil
+
+}

@@ -61,6 +61,12 @@ func (s *VehicleDefault) GetByBrandAndYears(brand string, startYear, endYear int
 	return
 }
 
+// GetVelocityAVGByBrand()
+func (s *VehicleDefault) GetVelocityAVGByBrand(brand string) (avg float32, err error) {
+	avg, err = s.rp.GetVelocityAVGByBrand(brand)
+	return
+}
+
 // Función que valida los campos del vehículo
 func validateVehicle(v models.Vehicle) error {
 	// Verificar si los campos obligatorios no están vacíos

@@ -240,3 +240,34 @@ func (h *VehicleDefault) GetByBrandAndYears() http.HandlerFunc {
 		})
 	}
 }
+
+func (h *VehicleDefault) GetVelocityAVGByBrand() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		brand := chi.URLParam(r, "brand")
+
+		avg, err := h.sv.GetVelocityAVGByBrand(brand)
+
+		if err != nil {
+			var statusCode int
+
+			switch {
+			case errors.Is(err, models.BadRequestErr):
+				statusCode = http.StatusBadRequest
+			case errors.Is(err, models.NotFoundErr):
+				statusCode = http.StatusNotFound
+			default:
+				statusCode = http.StatusInternalServerError
+			}
+
+			response.JSON(w, statusCode, map[string]any{
+				"Error description": err.Error(),
+			})
+
+			return
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"Average capacity by brand": avg,
+		})
+	}
+}

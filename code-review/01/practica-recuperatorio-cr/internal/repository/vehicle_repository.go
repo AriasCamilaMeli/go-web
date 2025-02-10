@@ -12,4 +12,6 @@ type VehicleRepository interface {
 	GetByColorAndYear(color string, year int) (v map[int]models.Vehicle, err error)
 	//GetByBrandAndYears
 	GetByBrandAndYears(brand string, startYear, endYear int) (v map[int]models.Vehicle, err error)
+	//GetVelocityAVGByBrand()
+	GetVelocityAVGByBrand(brand string) (avg float32, err error)
 }
