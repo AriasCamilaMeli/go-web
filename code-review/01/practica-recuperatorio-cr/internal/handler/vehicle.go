@@ -333,6 +333,8 @@ func (h *VehicleDefault) UpdateSpeed() http.HandlerFunc {
 			switch {
 			case errors.Is(err, models.BadRequestErr):
 				statusCode = http.StatusBadRequest
+			case errors.Is(err, models.NotFoundErr):
+				statusCode = http.StatusNotFound
 			default:
 				statusCode = http.StatusInternalServerError
 			}
