@@ -93,3 +93,19 @@ func (r *VehicleMap) GetVelocityAVGByBrand(brand string) (avg float32, err error
 	return (float32(suma) / float32(contador)), nil
 
 }
+
+// CreateInBatch()
+func (r *VehicleMap) CreateInBatch(v []models.Vehicle) (err error) {
+	for _, value := range v {
+		_, exists := r.db[value.Id]
+		if exists {
+			err = models.AlreadyExistErr
+			return
+		}
+	}
+	for _, value := range v {
+		r.db[value.Id] = value
+	}
+	return
+
+}

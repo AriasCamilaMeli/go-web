@@ -67,6 +67,19 @@ func (s *VehicleDefault) GetVelocityAVGByBrand(brand string) (avg float32, err e
 	return
 }
 
+// CreateInBatch()
+func (s *VehicleDefault) CreateInBatch(v []models.Vehicle) (err error) {
+	for _, value := range v {
+		err = validateVehicle(value)
+		if err != nil {
+			return
+		}
+	}
+
+	err = s.rp.CreateInBatch(v)
+	return
+}
+
 // Función que valida los campos del vehículo
 func validateVehicle(v models.Vehicle) error {
 	// Verificar si los campos obligatorios no están vacíos

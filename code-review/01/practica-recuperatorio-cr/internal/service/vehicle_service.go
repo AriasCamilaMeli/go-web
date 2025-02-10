@@ -14,4 +14,6 @@ type VehicleService interface {
 	GetByBrandAndYears(brand string, startYear, endYear int) (v map[int]models.Vehicle, err error)
 	//GetVelocityAVGByBrand()
 	GetVelocityAVGByBrand(brand string) (avg float32, err error)
+	//CreateInBatch()
+	CreateInBatch(v []models.Vehicle) (err error)
 }

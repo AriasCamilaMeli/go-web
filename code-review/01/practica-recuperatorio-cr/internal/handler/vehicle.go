@@ -271,3 +271,39 @@ func (h *VehicleDefault) GetVelocityAVGByBrand() http.HandlerFunc {
 		})
 	}
 }
+
+func (h *VehicleDefault) CreateInBatch() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var v []models.Vehicle
+		err := json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			response.JSON(w, http.StatusInternalServerError, map[string]any{
+				"message": models.InternalErr.Error(),
+			})
+			return
+		}
+
+		err = h.sv.CreateInBatch(v)
+		if err != nil {
+			var statusCode int
+			switch {
+			case errors.Is(err, models.AlreadyExistErr):
+				statusCode = http.StatusConflict
+			case errors.Is(err, models.BadRequestErr):
+				statusCode = http.StatusBadRequest
+			default:
+				statusCode = http.StatusInternalServerError
+			}
+
+			response.JSON(w, statusCode, map[string]any{
+				"message": err.Error(),
+			})
+			return
+
+		}
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"message": "Vehículos creados exitosamente.",
+		})
+
+	}
+}
