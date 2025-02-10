@@ -167,3 +167,76 @@ func (h *VehicleDefault) GetByColorAndYear() http.HandlerFunc {
 
 	}
 }
+
+func (h *VehicleDefault) GetByBrandAndYears() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		brand := chi.URLParam(r, "brand")
+		startYear, err := strconv.Atoi(chi.URLParam(r, "start_year"))
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"error description": models.BadRequestErr.Error(),
+			})
+			return
+		}
+
+		endYear, err := strconv.Atoi(chi.URLParam(r, "end_year"))
+
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, map[string]any{
+				"error description": models.BadRequestErr.Error(),
+			})
+			return
+		}
+
+		v, err := h.sv.GetByBrandAndYears(brand, startYear, endYear)
+
+		if err != nil {
+
+			var (
+				statusCode int
+				errorMsg   string
+			)
+			switch {
+			case errors.Is(err, models.BadRequestErr):
+				statusCode = http.StatusBadRequest
+				errorMsg = err.Error()
+			case errors.Is(err, models.NotFoundErr):
+				statusCode = http.StatusNotFound
+				errorMsg = err.Error()
+			default:
+				statusCode = http.StatusInternalServerError
+				errorMsg = err.Error()
+			}
+
+			response.JSON(w, statusCode, map[string]any{
+				"Error description": errorMsg,
+			})
+			return
+		}
+		// response
+		data := make(map[int]models.VehicleDoc)
+		for key, value := range v {
+			data[key] = models.VehicleDoc{
+				ID:              value.Id,
+				Brand:           value.Brand,
+				Model:           value.Model,
+				Registration:    value.Registration,
+				Color:           value.Color,
+				FabricationYear: value.FabricationYear,
+				Capacity:        value.Capacity,
+				MaxSpeed:        value.MaxSpeed,
+				FuelType:        value.FuelType,
+				Transmission:    value.Transmission,
+				Weight:          value.Weight,
+				Height:          value.Height,
+				Length:          value.Length,
+				Width:           value.Width,
+			}
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "success",
+			"data":    data,
+		})
+	}
+}

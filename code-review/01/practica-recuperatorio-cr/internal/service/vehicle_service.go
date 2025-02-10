@@ -10,4 +10,6 @@ type VehicleService interface {
 	Save(v models.Vehicle) (newV models.Vehicle, err error)
 	// GetByColorAndYear metodo para obtener vehicolos por color y año dado
 	GetByColorAndYear(color string, year int) (v map[int]models.Vehicle, err error)
+	//GetByBrandAndYears
+	GetByBrandAndYears(brand string, startYear, endYear int) (v map[int]models.Vehicle, err error)
 }

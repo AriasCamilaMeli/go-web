@@ -47,6 +47,20 @@ func (s *VehicleDefault) GetByColorAndYear(color string, year int) (v map[int]mo
 	return
 }
 
+// GetByBrandAndYears
+func (s *VehicleDefault) GetByBrandAndYears(brand string, startYear, endYear int) (v map[int]models.Vehicle, err error) {
+	v, err = s.rp.GetByBrandAndYears(brand, startYear, endYear)
+	if err != nil {
+		return v, models.InternalErr
+	}
+
+	if len(v) <= 1 {
+		return v, models.NotFoundErr
+	}
+
+	return
+}
+
 // Función que valida los campos del vehículo
 func validateVehicle(v models.Vehicle) error {
 	// Verificar si los campos obligatorios no están vacíos
